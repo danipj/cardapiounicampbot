@@ -5,7 +5,6 @@ from telegram.ext import (Updater, CommandHandler)
 import requests
 from bs4 import BeautifulSoup
 import logging
-#import re
 
 
 # Enable logging
@@ -19,20 +18,19 @@ def start(bot, update):
         'Veja o cardápio do dia usando o comando /get')
 
 def get(bot, update):
-    #update.message.reply_text("Checando cardápio")
     page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php")
-    update.message.reply_text("Cardápio encontrado")
+    #update.message.reply_text("Cardápio encontrado")
     soup = BeautifulSoup(page.content,"html.parser")
-    #remover tag br que só atrapalha
-    #for e in soup.find_all('br'):
-     #   e.extract()
+
     #achar tabelas
     cells = soup.find_all('table')
 
     name = ""
     for cell in cells:
-        if "class" in cell.attrs and "fundo_cardapio" in cell['class'] :
-            name += "------------------------------\n"
+        if len(name)>1:
+            update.message.reply_text(name)
+            name=""
+        if "class" in cell.attrs and "fundo_cardapio" in cell['class']:
             for tag in cell.contents:
                 if tag.name is not None and len(tag.contents)>0 :
                     #name += tag.name + "\n"
@@ -44,25 +42,7 @@ def get(bot, update):
                             for tag2 in tag1.contents:
                                 if tag2.string is not None and len(tag2.string)>1:
                                     name += tag2.string.strip() + "\n"
-               # else:
-                   # name+=tag.string+"\n"
-            #name = cell.prettify()
-            #cardapio = re.sub("<\/?\w+\/?>","",name)
-            #update.message.reply_text(cardapio.strip())
-    #    if len(cell.contents)>1 and cell.contents[0].name is not None and "strong" in cell.contents[0].name.lower():
-    #        name+= cell.contents[0].string + "\n"
-      #  if cell.string is not None:
-            #name = cell.string.encode('utf8')
-          #  name += str(cell.string)+ "\n"
-            #if "café da manhã" in name.lower():
-             #   update.message.reply_text("Café")
-              #  i = cells.index(cell)
-               # update.message.reply_text(cells[i+1].string)
 
-    #for i in range(i,i+4):
-     #   string += cell[i].string + "\n"
-    #name="fim"
-    update.message.reply_text(name)
 
 def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"' % (update, error))
