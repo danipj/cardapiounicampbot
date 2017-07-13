@@ -19,23 +19,26 @@ def start(bot, update):
 
 def get(bot, update):
     page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php")
-    #update.message.reply_text("Cardápio encontrado")
     soup = BeautifulSoup(page.content,"html.parser")
 
     #achar tabelas
-    cells = soup.find_all('table')
+    tables = soup.find_all('table')
 
     name = ""
-    for cell in cells:
+    for table in tables:
+        #se ja tiver pegado a refeição, publica e zera string
         if len(name)>1:
             update.message.reply_text(name)
             name=""
-        if "class" in cell.attrs and "fundo_cardapio" in cell['class']:
-            for tag in cell.contents:
+
+        #achar a class especifica dentro da table
+        if "class" in table.attrs and "fundo_cardapio" in table['class']:
+            #html nao ajuda o beautifulsoup a achar o texto (.string), descer tag por tag
+            for tag in table.contents:
                 if tag.name is not None and len(tag.contents)>0 :
-                    #name += tag.name + "\n"
                     for tag1 in tag.contents:
                         if tag1.string is not None:
+                            #varias strings são só whitespace, checar se é palavra
                             if len(tag1.string)>1:
                                 name += tag1.string.strip() + "\n"
                         elif len(tag1.contents)>0:
@@ -48,8 +51,11 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"' % (update, error))
 
 def main():
+    #get token from file
+    file = open("token.txt",'r')
+    token = file.readline()
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(token="435711787:AAHMugWJ4liav7RCMBcSMYRVbu2khc9C8BQ")
+    updater = Updater(token=token)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
