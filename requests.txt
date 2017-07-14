@@ -1,0 +1,13 @@
+certifi==2017.4.17
+chardet==3.0.4
+future==0.16.0
+idna==2.5
+pbr==3.1.1
+python-telegram-bot==6.1.0
+requests==2.18.1
+six==1.10.0
+stevedore==1.24.0
+urllib3==1.21.1
+virtualenv==15.1.0
+virtualenv-clone==0.2.6
+virtualenvwrapper==4.7.2
