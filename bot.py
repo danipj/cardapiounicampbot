@@ -26,7 +26,7 @@ def get(bot, update):
         #bandejao fechou, pegar proximo dia
         date = datetime.today() + datetime.timedelta(days=1)
 
-    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s",date.year,date.month,date.day)
+    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day))
     soup = BeautifulSoup(page.content,"html.parser")
 
     #achar tabelas
