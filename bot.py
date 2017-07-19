@@ -5,6 +5,7 @@ from telegram.ext import (Updater, CommandHandler)
 import requests
 from bs4 import BeautifulSoup
 import logging
+from datetime import datetime
 
 
 # Enable logging
@@ -18,7 +19,14 @@ def start(bot, update):
         'Veja o cardápio do dia usando o comando /get')
 
 def get(bot, update):
-    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php")
+
+    #get next meal date
+    date = datetime.now()
+    if date.hour >19 or (date.hour ==19 and date.minute >=45):
+        #bandejao fechou, pegar proximo dia
+        date = datetime.today() + datetime.timedelta(days=1)
+
+    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s",date.year,date.month,date.day)
     soup = BeautifulSoup(page.content,"html.parser")
 
     #achar tabelas
