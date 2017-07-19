@@ -51,11 +51,13 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"' % (update, error))
 
 def main():
+    
     #get token from file
     file = open("token.txt",'r')
     token = file.readline()
+
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(token=token)
+    updater = Updater(token=token.strip())
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
