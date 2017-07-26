@@ -5,6 +5,7 @@ from telegram.ext import (Updater, CommandHandler)
 import requests
 from bs4 import BeautifulSoup
 import logging
+from datetime import datetime, timedelta
 
 
 # Enable logging
@@ -18,7 +19,14 @@ def start(bot, update):
         'Veja o cardápio do dia usando o comando /get')
 
 def get(bot, update):
-    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php")
+
+    #get next meal date
+    date = datetime.now()
+    if date.hour >19 or (date.hour ==19 and date.minute >=45):
+        #bandejao fechou, pegar proximo dia
+        date = datetime.today() + timedelta(days=1)
+
+    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day))
     soup = BeautifulSoup(page.content,"html.parser")
 
     #achar tabelas
@@ -51,11 +59,13 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"' % (update, error))
 
 def main():
+    
     #get token from file
     file = open("token.txt",'r')
     token = file.readline()
+
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(token=token)
+    updater = Updater(token=token.strip())
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
