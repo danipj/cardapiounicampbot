@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 from datetime import datetime, timedelta
+import re
 
 
 # Enable logging
@@ -13,6 +14,52 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+
+
+def getMenuDict (text):
+    index = 0
+    menuOptions = {}
+    isMenuOption = False
+
+    for line in text:
+        if "ARROZ" in line: # menu option begins with arroz
+            isMenuOption = True
+            key = getKey(index)
+            menuOptions[key] = []
+        if isMenuOption:
+            menuOptions[key].append(line)
+        if "SUCO" in line: # option ends with suco
+            isMenuOption = False
+            index += 1 # next option
+
+    for option in menuOptions: # lists to strings
+        menuOptions[option] = "\n".join(menuOptions[option])
+
+    return menuOptions
+
+def getKey(index):
+    if index == 0:
+        return "Almoco"
+    elif index == 1:
+        return "AlmocoVeg"
+    elif index == 2:
+        return "Jantar"
+    else:
+        return "JantarVeg"
+
+def getCleanText(url):
+    # get and decode web content
+    content = requests.get(url).content
+    htmlText = content.decode('cp1252')
+
+    # remove HTML
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(htmlText, "lxml")
+
+    # split into list without ugly whitespace
+    text = re.split(r'\s{2,}', soup.get_text())
+
+    return text
 
 def start(bot, update):
     update.message.reply_text(
@@ -26,40 +73,20 @@ def get(bot, update):
         #bandejao fechou, pegar proximo dia
         date = datetime.today() + timedelta(days=1)
 
-    page = requests.get("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day))
-    soup = BeautifulSoup(page.content,"html.parser")
+    text = getCleanText("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day))
+    menuDict = getMenuDict(text)
 
-    #achar tabelas
-    tables = soup.find_all('table')
-
-    name = ""
-    for table in tables:
-        #se ja tiver pegado a refeição, publica e zera string
-        if len(name)>1:
-            update.message.reply_text(name)
-            name=""
-
-        #achar a class especifica dentro da table
-        if "class" in table.attrs and "fundo_cardapio" in table['class']:
-            #html nao ajuda o beautifulsoup a achar o texto (.string), descer tag por tag
-            for tag in table.contents:
-                if tag.name is not None and len(tag.contents)>0 :
-                    for tag1 in tag.contents:
-                        if tag1.string is not None:
-                            #varias strings são só whitespace, checar se é palavra
-                            if len(tag1.string)>1:
-                                name += tag1.string.strip() + "\n"
-                        elif len(tag1.contents)>0:
-                            for tag2 in tag1.contents:
-                                if tag2.string is not None and len(tag2.string)>1:
-                                    name += tag2.string.strip() + "\n"
+    update.message.reply_text(menuDict["Almoco"])
+    update.message.reply_text(menuDict["AlmocoVeg"])
+    update.message.reply_text(menuDict["Jantar"])
+    update.message.reply_text(menuDict["JantarVeg"])
 
 
 def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"' % (update, error))
 
 def main():
-    
+
     #get token from file
     file = open("token.txt",'r')
     token = file.readline()
