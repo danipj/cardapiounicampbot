@@ -54,7 +54,7 @@ def getCleanText(url):
 
     # remove HTML
     from bs4 import BeautifulSoup
-    soup = BeautifulSoup(htmlText, "lxml")
+    soup = BeautifulSoup(htmlText, "html.parser")
 
     # split into list without ugly whitespace
     text = re.split(r'\s{2,}', soup.get_text())
@@ -64,16 +64,29 @@ def getCleanText(url):
 def start(bot, update):
     update.message.reply_text(
         'Veja o cardápio do dia usando o comando /get')
+def getDate():
+    #get next meal date
+    date = datetime.now()
+    if date.weekday() == 5: # sabado
+        delta = 2
+    elif date.weekday() == 6: # domingo
+        delta = 1
+    #bandejao fechou, pegar proximo dia
+    elif date.hour >19 or (date.hour ==19 and date.minute >=45):
+        if date.weekday() == 4: # sexta feira, pegar segunda
+            delta = 3
+        delta = 1
+    else:
+        delta = 0
+    return datetime.today() + timedelta(days=delta)
 
 def get(bot, update):
 
     #get next meal date
-    date = datetime.now()
-    if date.hour >19 or (date.hour ==19 and date.minute >=45):
-        #bandejao fechou, pegar proximo dia
-        date = datetime.today() + timedelta(days=1)
+    date = getDate()
+    url = "http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day)
 
-    text = getCleanText("http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day))
+    text = getCleanText(url)
     menuDict = getMenuDict(text)
 
     update.message.reply_text(menuDict["Almoco"])
