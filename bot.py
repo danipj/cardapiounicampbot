@@ -9,12 +9,21 @@ from datetime import datetime, timedelta
 import re
 
 
-# Enable logging
+######
+######  Logger settings
+######
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
+def error(bot, update, error):
+    logger.warning('Update "%s" caused error "%s"' % (update, error))
+
+######
+###### Auxiliary functions
+######
 
 def getMenuDict (text):
     index = 0
@@ -61,9 +70,6 @@ def getCleanText(url):
 
     return text
 
-def start(bot, update):
-    update.message.reply_text(
-        'Veja o cardápio do dia usando o comando /get')
 def getDate():
     #get next meal date
     date = datetime.now()
@@ -80,6 +86,14 @@ def getDate():
         delta = 0
     return datetime.today() + timedelta(days=delta)
 
+######
+###### Bot commands
+######
+
+def start(bot, update):
+    update.message.reply_text(
+        'Veja o cardápio do dia usando o comando /get')
+
 def get(bot, update):
 
     #get next meal date
@@ -94,9 +108,9 @@ def get(bot, update):
     update.message.reply_text(menuDict["Jantar"])
     update.message.reply_text(menuDict["JantarVeg"])
 
-
-def error(bot, update, error):
-    logger.warning('Update "%s" caused error "%s"' % (update, error))
+######
+###### Main code
+######
 
 def main():
 
