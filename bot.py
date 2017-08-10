@@ -77,8 +77,8 @@ def getDate():
         delta = 2
     elif date.weekday() == 6: # domingo
         delta = 1
-    #bandejao fechou, pegar proximo dia
-    elif date.hour >19 or (date.hour ==19 and date.minute >=45):
+    #bandejao fechou, pegar proximo dia (+3 porque server está em UTC #gambiarra)
+    elif date.hour >19+3 or (date.hour ==19+3 and date.minute >=45):
         if date.weekday() == 4: # sexta feira, pegar segunda
             delta = 3
         delta = 1
