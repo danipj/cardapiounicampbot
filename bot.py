@@ -81,7 +81,8 @@ def getDate():
     elif date.hour >19+3 or (date.hour ==19+3 and date.minute >=45):
         if date.weekday() == 4: # sexta feira, pegar segunda
             delta = 3
-        delta = 1
+        else:
+            delta = 1
     else:
         delta = 0
     return datetime.today() + timedelta(days=delta)
