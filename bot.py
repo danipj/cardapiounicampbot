@@ -105,12 +105,9 @@ def get(bot, update):
     menuDict = getMenuDict(text)
 
     update.message.reply_text("*%s/%s/%s*"%(date.day,date.month,date.year), parse_mode="Markdown")
-    update.message.reply_text("Almoço")
-    update.message.reply_text(menuDict["Almoco"])
-#    update.message.reply_text(menuDict["AlmocoVeg"])
-    update.message.reply_text("Janta")
-    update.message.reply_text(menuDict["Jantar"])
-#   update.message.reply_text(menuDict["JantarVeg"])
+    update.message.reply_text("*ALMOÇO*\n"+menuDict["Almoco"],parse_mode="Markdown")
+    update.message.reply_text("*JANTA*\n"+menuDict["Jantar"],parse_mode="Markdown")
+
 
 ######
 ###### Main code
