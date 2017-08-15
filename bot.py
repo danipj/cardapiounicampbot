@@ -31,7 +31,7 @@ def getMenuDict (text):
     isMenuOption = False
 
     for line in text:
-        if "ARROZ" in line: # menu option begins with arroz
+        if "FEIJÃO" in line: # menu option begins with feijão - arroz could be dessert
             isMenuOption = True
             key = getKey(index)
             menuOptions[key] = []
