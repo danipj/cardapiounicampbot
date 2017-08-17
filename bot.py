@@ -109,6 +109,19 @@ def get(bot, update):
     update.message.reply_text("*ALMOÇO*\n"+menuDict["Almoco"],parse_mode="Markdown")
     update.message.reply_text("*JANTA*\n"+menuDict["Jantar"],parse_mode="Markdown")
 
+def vet(bot, update):
+
+    #get next meal date
+    date = getDate()
+    url = "http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day)
+
+    text = getCleanText(url)
+    menuDict = getMenuDict(text)
+
+    update.message.reply_text("*%s/%s/%s*"%(date.day,date.month,date.year), parse_mode="Markdown")
+
+    update.message.reply_text("*ALMOÇO*\n"+menuDict["AlmocoVeg"],parse_mode="Markdown")
+    update.message.reply_text("*JANTA*\n"+menuDict["JantarVeg"],parse_mode="Markdown")
 
 ######
 ###### Main code
@@ -130,7 +143,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", start))
     dp.add_handler(CommandHandler("get", get))
-    dp.add_handler(CommandHandler("veg", get))
+    dp.add_handler(CommandHandler("veg", vet))
 
     # log all errors
     dp.add_error_handler(error)
