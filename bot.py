@@ -93,7 +93,7 @@ def getDate():
 
 def start(bot, update):
     update.message.reply_text(
-        'Veja o cardápio do dia usando o comando /get')
+        'Veja o cardápio do dia usando o comando /get\nPara o cardápio vegetariano, use /veg')
 
 def get(bot, update):
 
@@ -108,7 +108,7 @@ def get(bot, update):
     update.message.reply_text("*ALMOÇO*\n"+menuDict["Almoco"],parse_mode="Markdown")
     update.message.reply_text("*JANTA*\n"+menuDict["Jantar"],parse_mode="Markdown")
 
-def vet(bot, update):
+def veg(bot, update):
 
     #get next meal date
     date = getDate()
@@ -141,7 +141,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", start))
     dp.add_handler(CommandHandler("get", get))
-    dp.add_handler(CommandHandler("veg", vet))
+    dp.add_handler(CommandHandler("veg", veg))
 
     # log all errors
     dp.add_error_handler(error)
