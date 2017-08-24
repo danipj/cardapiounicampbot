@@ -1,6 +1,6 @@
 # cardapiounicampbot
 
-Telegram bot using https://github.com/eternnoir/pyTelegramBotAPI to get Unicamp daily menu.
+Telegram bot using [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) to get Unicamp daily menu.
 
 
 ### Installing
@@ -9,8 +9,8 @@ Telegram bot using https://github.com/eternnoir/pyTelegramBotAPI to get Unicamp 
 sudo pip install -r requirements.txt
 ```
 
-- Create your bot using (botfather)[https://core.telegram.org/bots#botfather];
-- Place your tolken in `token.txt`.
+- Create your bot using [BotFather](https://core.telegram.org/bots#botfather);
+- Place your token in `token.txt`.
 
 ## Running
 
