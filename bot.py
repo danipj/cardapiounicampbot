@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import logging
 from datetime import datetime, timedelta
 import re
+import smtplib
 
 
 ######
@@ -121,15 +122,26 @@ def veg(bot, update):
     update.message.reply_text("*ALMOÇO*\n"+menuDict["AlmocoVeg"],parse_mode="Markdown")
     update.message.reply_text("*JANTA*\n"+menuDict["JantarVeg"],parse_mode="Markdown")
 
+def send_error_mail(email, pwd):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(email, pwd)
+     
+    msg = "CardapioBot stopped."
+    server.sendmail(email, email, msg)
+    server.quit()
+
 ######
 ###### Main code
 ######
 
 def main():
 
-    #get token from file
+    #get security info from file
     file = open("token.txt",'r')
     token = file.readline()
+    email = file.readline()
+    pwd = file.readline()
 
     # Create the EventHandler and pass it your bot's token.
     updater = Updater(token=token.strip())
@@ -152,7 +164,11 @@ def main():
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    try:
+        updater.idle()
+    except Exception as e:
+        send_error_mail(email,pwd)
 
 if __name__ == '__main__':
     main()
+
