@@ -112,7 +112,7 @@ def veg(bot, update):
 
     #get next meal date
     date = getDate()
-    url = "http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day)
+    url = "www.prefeitura.unicamp.br/apps/site/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day)
 
     text = getCleanText(url)
     menuDict = getMenuDict(text)
