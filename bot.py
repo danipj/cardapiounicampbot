@@ -128,7 +128,7 @@ def veg(bot, update):
 def main():
 
     #get token from file
-    file = open("token.txt",'r')
+    file = open("../tmp/token.txt",'r')
     token = file.readline()
 
     # Create the EventHandler and pass it your bot's token.
