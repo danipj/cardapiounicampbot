@@ -8,14 +8,14 @@ import logging
 from datetime import datetime, timedelta
 import re
 import smtplib
-
+import signal
 
 ######
 ######  Logger settings
 ######
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+                    level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +100,7 @@ def get(bot, update):
 
     #get next meal date
     date = getDate()
-    url = "http://catedral.prefeitura.unicamp.br/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day)
+    url = "http://www.prefeitura.unicamp.br/apps/site/cardapio.php?d=%s-%s-%s" % (date.year,date.month,date.day)
 
     text = getCleanText(url)
     menuDict = getMenuDict(text)
@@ -122,15 +122,23 @@ def veg(bot, update):
     update.message.reply_text("*ALMOÇO*\n"+menuDict["AlmocoVeg"],parse_mode="Markdown")
     update.message.reply_text("*JANTA*\n"+menuDict["JantarVeg"],parse_mode="Markdown")
 
-def send_error_mail(email, pwd):
+def send_error_mail():
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login(email, pwd)
+    
+    file = open("token.txt",'r')
+    trash = file.readline()
+    email = file.readline()
+    pwd = file.readline()
+
+    server.login(email.strip(), pwd.strip())
      
     msg = "CardapioBot stopped."
     server.sendmail(email, email, msg)
     server.quit()
 
+def sign_handler(signal, frame):
+    send_error_mail()
 ######
 ###### Main code
 ######
@@ -140,11 +148,10 @@ def main():
     #get security info from file
     file = open("token.txt",'r')
     token = file.readline()
-    email = file.readline()
-    pwd = file.readline()
+
 
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(token=token.strip())
+    updater = Updater(token=token.strip(), user_sig_handler=sign_handler)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -164,10 +171,7 @@ def main():
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
-    try:
-        updater.idle()
-    except Exception as e:
-        send_error_mail(email,pwd)
+    updater.idle()
 
 if __name__ == '__main__':
     main()
