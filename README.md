@@ -1,6 +1,6 @@
 # cardapiounicampbot
 
-Telegram bot using [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) to get Unicamp daily menu.
+Telegram bot using [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) to get Unicamp daily menu, with both vegetarian and non-vegetarian options.
 
 
 ### Installing
